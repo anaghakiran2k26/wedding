@@ -13,14 +13,23 @@
   const loginStatus = qs("#loginStatus");
   const uploadStatus = qs("#uploadStatus");
   const photoInput = qs("#photos");
+  const emailRow = qs("#emailRow");
+  const loginHint = qs("#loginHint");
+  const emailInput = qs("#email");
+  const useSupabase = Boolean(window.supabaseGallery && window.supabaseGallery.isEnabled());
 
   function getFetchErrorMessage(error, action) {
+    const localAdminUrl =
+      window.location.protocol === "file:"
+        ? "http://localhost:3000/admin.html"
+        : `${window.location.origin}/admin.html`;
+
     if (window.location.protocol === "file:") {
-      return `Admin ${action} works only through the local server. Open this page from http://localhost:3000/admin.html`;
+      return `Admin ${action} works only through the local server. Open this page from ${localAdminUrl}`;
     }
 
     if (error && /Failed to fetch/i.test(error.message || "")) {
-      return `Could not reach the server for ${action}. Open the admin page from http://localhost:3000/admin.html`;
+      return `Could not reach the server for ${action}. Open the admin page from ${localAdminUrl}`;
     }
 
     return error.message || `${action} failed.`;
@@ -28,6 +37,23 @@
 
   function getToken() {
     return localStorage.getItem(tokenKey);
+  }
+
+  function configureLoginMode() {
+    if (useSupabase) {
+      if (emailRow) emailRow.classList.remove("is-hidden");
+      if (emailInput) emailInput.required = true;
+      if (loginHint) {
+        loginHint.textContent = "Use your Supabase admin email and password to manage the gallery.";
+      }
+      return;
+    }
+
+    if (emailRow) emailRow.classList.add("is-hidden");
+    if (emailInput) emailInput.required = false;
+    if (loginHint) {
+      loginHint.textContent = "Local server mode is active for this device.";
+    }
   }
 
   function setUnlocked(unlocked) {
@@ -45,6 +71,18 @@
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus(loginStatus, "Checking access...");
+
+    if (useSupabase) {
+      try {
+        await window.supabaseGallery.login(qs("#email").value, qs("#password").value);
+        qs("#password").value = "";
+        setStatus(loginStatus, "");
+        setUnlocked(true);
+      } catch (error) {
+        setStatus(loginStatus, error.message || "Login failed.", true);
+      }
+      return;
+    }
 
     try {
       const response = await fetch("/api/login", {
@@ -65,6 +103,11 @@
   });
 
   logoutButton.addEventListener("click", () => {
+    if (useSupabase) {
+      window.supabaseGallery.logout().finally(() => setUnlocked(false));
+      return;
+    }
+
     localStorage.removeItem(tokenKey);
     setUnlocked(false);
   });
@@ -85,6 +128,28 @@
   uploadForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus(uploadStatus, "Saving photos...");
+
+    if (useSupabase) {
+      try {
+        const files = Array.from(photoInput.files || []);
+        if (!files.length) throw new Error("Choose at least one photo.");
+
+        const gallery = await window.supabaseGallery.uploadPhotos(
+          files,
+          qs("#photoTitle").value,
+          qs("#photoCategory").value
+        );
+
+        uploadForm.reset();
+        qs("#photoTitle").value = "Wedding memory";
+        previewGrid.innerHTML = "";
+        setStatus(uploadStatus, "Photos saved to the public gallery.");
+        renderSavedPhotos(gallery || []);
+      } catch (error) {
+        setStatus(uploadStatus, error.message || "Upload failed.", true);
+      }
+      return;
+    }
 
     try {
       const formData = new FormData(uploadForm);
@@ -111,6 +176,16 @@
   });
 
   async function loadSavedPhotos() {
+    if (useSupabase) {
+      try {
+        const photos = await window.supabaseGallery.listPhotos();
+        renderSavedPhotos(photos || []);
+      } catch {
+        renderSavedPhotos([]);
+      }
+      return;
+    }
+
     try {
       const response = await fetch("/api/gallery", { cache: "no-store" });
       const data = await response.json();
@@ -139,16 +214,26 @@
         <button class="button button-small" type="button">Delete</button>
       `;
 
-      article.querySelector("button").addEventListener("click", () => deletePhoto(photo.id));
+      article.querySelector("button").addEventListener("click", () => deletePhoto(photo.path || photo.id));
       savedGrid.appendChild(article);
     });
   }
 
-  async function deletePhoto(id) {
-    if (!id) return;
+  async function deletePhoto(photoId) {
+    if (!photoId) return;
+
+    if (useSupabase) {
+      try {
+        const gallery = await window.supabaseGallery.deletePhoto(photoId);
+        renderSavedPhotos(gallery || []);
+      } catch (error) {
+        setStatus(uploadStatus, error.message || "Could not delete photo.", true);
+      }
+      return;
+    }
 
     try {
-      const response = await fetch(`/api/gallery/${encodeURIComponent(id)}`, {
+      const response = await fetch(`/api/gallery/${encodeURIComponent(photoId)}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${getToken()}` }
       });
@@ -160,5 +245,17 @@
     }
   }
 
-  setUnlocked(Boolean(getToken()));
+  async function init() {
+    configureLoginMode();
+
+    if (useSupabase) {
+      const session = await window.supabaseGallery.getSession();
+      setUnlocked(Boolean(session));
+      return;
+    }
+
+    setUnlocked(Boolean(getToken()));
+  }
+
+  init();
 })();

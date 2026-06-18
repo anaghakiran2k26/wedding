@@ -1192,6 +1192,14 @@ textarea:focus {
   color: var(--maroon);
 }
 
+.admin-help {
+  min-height: 24px;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
 .reveal {
   opacity: 0;
   transform: translateY(20px);

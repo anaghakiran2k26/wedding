@@ -43,9 +43,14 @@
       <section class="admin-card" id="loginCard">
         <h2>Admin access</h2>
         <form id="loginForm" class="admin-form">
+          <div class="field-row admin-email-row" id="emailRow">
+            <label for="email">Email</label>
+            <input id="email" type="email" autocomplete="username">
+          </div>
           <label for="password">Password</label>
           <input id="password" type="password" autocomplete="current-password" required>
           <button class="button button-primary" type="submit">Unlock Uploads</button>
+          <p class="admin-help" id="loginHint"></p>
           <p class="form-status" id="loginStatus" role="status"></p>
         </form>
       </section>
@@ -97,6 +102,9 @@
       </main>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
+    <script src="supabase-service.js"></script>
     <script src="admin.js"></script>
   </body>
 </html>

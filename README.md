@@ -1,6 +1,15 @@
 # Anagha & Kiran Wedding Invitation
 
-Premium Kerala-style marriage invitation website with a public gallery and password-protected photo upload admin page.
+Premium Kerala-style marriage invitation website with a public gallery and admin upload page.
+
+## Backend modes
+
+This project now supports two gallery backends:
+
+1. Local Node upload server
+2. Supabase Storage
+
+If Supabase is configured in `public/supabase-config.js`, the gallery and admin page use Supabase automatically.
 
 ## Run locally
 
@@ -13,17 +22,35 @@ Open:
 - Public invitation: `http://localhost:3000`
 - Admin upload page: `http://localhost:3000/admin.html`
 
-Default admin password:
+Default local admin password:
 
 ```text
-ak-family-2026
+ANAGHA@2000
 ```
 
-For publishing, set a stronger password:
+## Supabase setup
 
-```bash
-ADMIN_PASSWORD="your-secure-password" npm start
+Update `public/supabase-config.js`:
+
+```js
+window.SUPABASE_CONFIG = {
+  enabled: true,
+  url: "https://YOUR_PROJECT.supabase.co",
+  anonKey: "YOUR_SUPABASE_ANON_KEY",
+  bucket: "wedding-gallery",
+  folder: "gallery"
+};
 ```
+
+Create in Supabase:
+
+1. A public storage bucket named `wedding-gallery`
+2. An auth user for the admin page
+3. Storage policies that allow:
+   - public read access for the gallery folder
+   - authenticated upload/delete access for admin users
+
+On the admin page, log in with the Supabase admin email and password.
 
 ## Edit wedding details
 
@@ -57,13 +84,15 @@ Starter gallery photos:
 public/assets/gallery/
 ```
 
-Uploaded admin photos are saved here:
+## Local server storage
+
+If you keep local server mode, uploaded admin photos are saved here:
 
 ```text
 uploads/gallery/
 ```
 
-The upload server keeps the gallery list in:
+The local upload server keeps the gallery list in:
 
 ```text
 data/gallery.json
@@ -71,6 +100,6 @@ data/gallery.json
 
 ## Deploy notes
 
-This project uses only built-in Node.js modules, so no extra packages are required.
-
-Deploy it to a Node-capable host such as Render, Railway, Fly.io, a VPS, or any shared host that supports persistent file storage. If your host has temporary storage, uploaded photos may disappear after redeploys. For long-term production hosting, connect uploads to Firebase Storage, S3, or another persistent storage provider.
+- GitHub Pages can show the public site only
+- GitHub Pages cannot run the local Node upload backend
+- Supabase mode is the better choice for cross-device public hosting

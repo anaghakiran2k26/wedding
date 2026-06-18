@@ -131,6 +131,14 @@
   }
 
   async function fetchUploadedPhotos() {
+    if (window.supabaseGallery && window.supabaseGallery.isEnabled()) {
+      try {
+        return await window.supabaseGallery.listPhotos();
+      } catch {
+        return [];
+      }
+    }
+
     try {
       const response = await fetch("/api/gallery", { cache: "no-store" });
       if (!response.ok) throw new Error("Gallery unavailable");
