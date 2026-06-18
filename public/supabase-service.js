@@ -5,6 +5,11 @@
     return window.SUPABASE_CONFIG || {};
   }
 
+  function getSetupMessage(config) {
+    const bucketName = config && config.bucket ? config.bucket : "wedding-gallery";
+    return `Supabase bucket "${bucketName}" is not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once.`;
+  }
+
   function isReadyConfig(config) {
     return Boolean(
       config &&
@@ -15,6 +20,32 @@
         window.supabase &&
         typeof window.supabase.createClient === "function"
     );
+  }
+
+  function normalizeError(error, config) {
+    const message = String(
+      (error && (error.message || error.error_description || error.msg)) || ""
+    ).trim();
+
+    if (/bucket.*not found/i.test(message)) {
+      return new Error(getSetupMessage(config));
+    }
+
+    if (/row-level security|violates row-level security/i.test(message)) {
+      return new Error(
+        "Supabase storage permissions are not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once."
+      );
+    }
+
+    if (/invalid login credentials/i.test(message)) {
+      return new Error("The email or password is incorrect.");
+    }
+
+    if (/email not confirmed/i.test(message)) {
+      return new Error("This Supabase email is not confirmed yet. Confirm it first, then log in again.");
+    }
+
+    return new Error(message || "Supabase request failed.");
   }
 
   function slugify(value) {
@@ -123,7 +154,7 @@
       sortBy: { column: "name", order: "desc" }
     });
 
-    if (error) throw error;
+    if (error) throw normalizeError(error, getConfig());
 
     const photos = (data || [])
       .filter((item) => item.name && !item.name.endsWith("/"))
@@ -141,7 +172,7 @@
       password
     });
 
-    if (error) throw error;
+    if (error) throw normalizeError(error, getConfig());
     return data;
   }
 
@@ -174,7 +205,7 @@
         contentType: file.type || undefined
       });
 
-      if (error) throw error;
+      if (error) throw normalizeError(error, getConfig());
       uploads.push(path);
     }
 
@@ -187,7 +218,7 @@
 
     const { client, bucket } = runtime;
     const { error } = await client.storage.from(bucket).remove([path]);
-    if (error) throw error;
+    if (error) throw normalizeError(error, getConfig());
 
     return listPhotos();
   }
