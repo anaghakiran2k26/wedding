@@ -1,7 +1,7 @@
 window.SUPABASE_CONFIG = {
-  enabled: false,
-  url: "",
-  anonKey: "",
+  enabled: true,
+  url: "https://cjhgbkjaiblvwugozlle.supabase.co",
+  anonKey: "sb_publishable_ajktECZsTkXFZyC1y6cDjA_3OS3yw8e",
   bucket: "wedding-gallery",
   folder: "gallery"
 };

@@ -17,12 +17,33 @@
   const loginHint = qs("#loginHint");
   const emailInput = qs("#email");
   const useSupabase = Boolean(window.supabaseGallery && window.supabaseGallery.isEnabled());
+  const isStaticHost =
+    window.location.protocol === "https:" &&
+    /github\.io$/i.test(window.location.hostname);
+
+  async function parseJsonResponse(response) {
+    const text = await response.text();
+
+    try {
+      return text ? JSON.parse(text) : {};
+    } catch {
+      throw new Error(
+        useSupabase
+          ? "Supabase response could not be read."
+          : "This admin page needs Supabase or a real backend server. GitHub Pages cannot run /api/login."
+      );
+    }
+  }
 
   function getFetchErrorMessage(error, action) {
     const localAdminUrl =
       window.location.protocol === "file:"
         ? "http://localhost:3000/admin.html"
         : `${window.location.origin}/admin.html`;
+
+    if (isStaticHost && !useSupabase) {
+      return "GitHub Pages cannot run the local upload backend. Enable Supabase in public/supabase-config.js or use localhost admin.";
+    }
 
     if (window.location.protocol === "file:") {
       return `Admin ${action} works only through the local server. Open this page from ${localAdminUrl}`;
@@ -52,7 +73,9 @@
     if (emailRow) emailRow.classList.add("is-hidden");
     if (emailInput) emailInput.required = false;
     if (loginHint) {
-      loginHint.textContent = "Local server mode is active for this device.";
+      loginHint.textContent = isStaticHost
+        ? "GitHub Pages cannot use the local upload backend. Turn on Supabase or use localhost."
+        : "Local server mode is active for this device.";
     }
   }
 
@@ -90,7 +113,7 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ password: qs("#password").value })
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) throw new Error(data.error || "Login failed.");
 
       localStorage.setItem(tokenKey, data.token);
@@ -158,7 +181,7 @@
         headers: { Authorization: `Bearer ${getToken()}` },
         body: formData
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) throw new Error(data.error || "Upload failed.");
 
       uploadForm.reset();
@@ -188,7 +211,7 @@
 
     try {
       const response = await fetch("/api/gallery", { cache: "no-store" });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       renderSavedPhotos(data.photos || []);
     } catch {
       renderSavedPhotos([]);
@@ -237,7 +260,7 @@
         method: "DELETE",
         headers: { Authorization: `Bearer ${getToken()}` }
       });
-      const data = await response.json();
+      const data = await parseJsonResponse(response);
       if (!response.ok) throw new Error(data.error || "Could not delete photo.");
       renderSavedPhotos(data.gallery || []);
     } catch (error) {
