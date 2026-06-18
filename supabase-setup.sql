@@ -9,6 +9,11 @@ values ('wedding-gallery', 'wedding-gallery', true)
 on conflict (id) do update
 set public = true;
 
+drop policy if exists "Public can view wedding gallery" on storage.objects;
+drop policy if exists "Authenticated users can upload wedding gallery images" on storage.objects;
+drop policy if exists "Authenticated users can update wedding gallery images" on storage.objects;
+drop policy if exists "Authenticated users can delete wedding gallery images" on storage.objects;
+
 -- Public read access for gallery images
 create policy "Public can view wedding gallery"
 on storage.objects
