@@ -50,6 +50,12 @@ Create in Supabase:
    - public read access for the gallery folder
    - authenticated upload/delete access for admin users
 
+Ready-to-run SQL is included in:
+
+```text
+supabase-setup.sql
+```
+
 On the admin page, log in with the Supabase admin email and password.
 
 ## Edit wedding details
