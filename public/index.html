@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Anagha and Kiran wedding invitation at Sagar Auditorium, Pannicode."
+    >
+    <title>Anagha & Kiran | Wedding Invitation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css?v=2">
+  </head>
+  <body>
+    <div class="site-shell">
+      <header class="topbar" aria-label="Primary navigation">
+        <a class="brand-mark" href="#home" aria-label="Anagha and Kiran home">
+          <span>AK</span>
+        </a>
+        <nav class="nav-links" aria-label="Wedding sections">
+          <a href="about.html">About Us</a>
+          <a href="gallery.html">Wedding Gallery</a>
+        </nav>
+        <a class="admin-link" href="admin.html">Admin</a>
+      </header>
+
+      <main>
+        <section class="hero-section" id="home">
+          <div class="hero-media" aria-hidden="true"></div>
+          <div class="hero-overlay"></div>
+          <div class="hero-content reveal">
+            <p class="eyebrow" data-config="weddingText">Anagha weds Kiran</p>
+            <h1 data-config="heroHeading">Anagha & Kiran's Wedding Celebration</h1>
+            <p class="hero-invite" data-config="invitationLine">
+              With immense joy, we invite you and your family to bless Anagha and Kiran on their special day
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#details">View Ceremony</a>
+              <a class="button button-secondary" href="location.html">Get Location</a>
+            </div>
+          </div>
+          <div class="scroll-cue" aria-hidden="true">
+            <span></span>
+          </div>
+        </section>
+
+        <section class="section intro-section" id="couple">
+          <div class="section-heading reveal">
+            <p class="eyebrow">The beginning</p>
+            <h2>Two hearts, one blessed journey</h2>
+          </div>
+          <div class="couple-grid">
+            <article class="person-panel reveal">
+              <span class="person-label">Bride</span>
+              <h3 data-config="brideName">Anagha</h3>
+              <p>
+                Grace, joy, and a home full of affection come together as Anagha steps into this beautiful new chapter.
+              </p>
+            </article>
+            <figure class="couple-photo-frame reveal">
+              <img
+                data-image-config="couplePortrait"
+                src="assets/images/anagha-kiran-watercolor.jpeg"
+                alt="Anagha and Kiran smiling together"
+              >
+              <figcaption>
+                <span>A</span>
+                <strong>&</strong>
+                <span>K</span>
+              </figcaption>
+            </figure>
+            <article class="person-panel reveal">
+              <span class="person-label">Groom</span>
+              <h3 data-config="groomName">Kiran</h3>
+              <p>
+                With warmth, devotion, and the blessings of loved ones, Kiran begins a cherished journey with Anagha.
+              </p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section details-section" id="details">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Marriage Ceremony</p>
+            <h2>Wedding details</h2>
+          </div>
+          <div class="details-layout">
+            <article class="event-card reveal">
+              <span class="event-icon" aria-hidden="true">||</span>
+              <p class="event-kicker" data-config="eventName">Marriage Ceremony</p>
+              <h3 data-config="coupleTitle">Anagha & Kiran</h3>
+              <dl>
+                <div>
+                  <dt>Venue</dt>
+                  <dd data-config="venueName">Sagar Auditorium, Pannicode</dd>
+                </div>
+                <div>
+                  <dt>Muhurtham</dt>
+                  <dd data-config="muhurthamTime">9:30 AM to 10:30 AM</dd>
+                </div>
+                <div>
+                  <dt>Invitation</dt>
+                  <dd data-config="welcomeMessage">All are welcome</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="countdown-panel reveal" aria-live="polite">
+              <p class="eyebrow">Countdown</p>
+              <h3 id="countdownTitle">Awaiting the wedding day</h3>
+              <div class="countdown-grid" id="countdown">
+                <div><strong>--</strong><span>Days</span></div>
+                <div><strong>--</strong><span>Hours</span></div>
+                <div><strong>--</strong><span>Minutes</span></div>
+                <div><strong>--</strong><span>Seconds</span></div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section memories-section" id="memories">
+          <div class="section-heading reveal">
+            <p class="eyebrow">Engagement memories</p>
+            <h2>A glimpse of love and celebration</h2>
+          </div>
+          <div class="memory-feature reveal">
+            <div class="memory-copy">
+              <p>
+                A cherished glimpse of their engagement day, filled with heartfelt smiles, quiet promises, and the joy of two families coming together.
+              </p>
+              <a class="button button-outline" data-drive-link href="#" target="_blank" rel="noreferrer">
+                View Full Engagement Album
+              </a>
+            </div>
+            <div class="engagement-strip" id="engagementPhotos" aria-label="Engagement photo previews"></div>
+          </div>
+        </section>
+
+        <section class="section blessings-section" id="blessings">
+          <div class="blessings-panel reveal">
+            <p class="eyebrow">Blessings</p>
+            <h2>Share your love with the couple</h2>
+            <p data-config="familyMessage">
+              Your presence, blessings, and warm wishes will make this celebration complete.
+            </p>
+            <form class="blessing-form" id="blessingForm">
+              <label for="blessingName">Name</label>
+              <input id="blessingName" name="name" type="text" placeholder="Your name">
+              <label for="blessingText">Message</label>
+              <textarea id="blessingText" name="message" rows="4" placeholder="Write a blessing"></textarea>
+              <button class="button button-primary" type="submit">Prepare Blessing</button>
+            </form>
+          </div>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>With love, family and friends</p>
+        <a href="#home" aria-label="Back to top">Back to top</a>
+      </footer>
+    </div>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Photo preview">
+      <button class="lightbox-close" type="button" aria-label="Close preview">x</button>
+      <img id="lightboxImage" alt="">
+      <p id="lightboxCaption"></p>
+    </dialog>
+
+    <script src="config.js?v=2"></script>
+    <script src="app.js?v=2"></script>
+  </body>
+</html>

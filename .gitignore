@@ -1,0 +1,6 @@
+node_modules/
+.env
+data/gallery.json.tmp
+uploads/gallery/*
+!uploads/gallery/.gitkeep
+*.log

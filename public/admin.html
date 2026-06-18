@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Wedding gallery photo upload admin for Anagha and Kiran.">
+    <title>Admin | Anagha & Kiran Wedding Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css?v=2">
+  </head>
+  <body class="admin-body">
+    <div class="site-shell">
+      <header class="topbar" aria-label="Admin navigation">
+        <a class="brand-mark" href="index.html" aria-label="Back to invitation">
+          <span>AK</span>
+        </a>
+        <nav class="nav-links" aria-label="Admin page links">
+          <a href="about.html">About Us</a>
+          <a href="gallery.html">Wedding Gallery</a>
+        </nav>
+        <a class="admin-link" href="index.html">Home</a>
+      </header>
+
+      <main class="admin-shell location-shell">
+      <section class="admin-hero">
+        <a class="brand-mark" href="index.html" aria-label="Back to invitation">
+          <span>AK</span>
+        </a>
+        <div>
+          <p class="eyebrow">Private gallery desk</p>
+          <h1>Upload wedding photos</h1>
+          <p>
+            Add engagement and wedding memories here. Saved photos appear automatically in the public gallery.
+          </p>
+        </div>
+      </section>
+
+      <section class="admin-card" id="loginCard">
+        <h2>Admin access</h2>
+        <form id="loginForm" class="admin-form">
+          <label for="password">Password</label>
+          <input id="password" type="password" autocomplete="current-password" required>
+          <button class="button button-primary" type="submit">Unlock Uploads</button>
+          <p class="form-status" id="loginStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-card is-hidden" id="uploadCard">
+        <div class="admin-card-header">
+          <div>
+            <p class="eyebrow">Gallery manager</p>
+            <h2>Save photos to gallery</h2>
+          </div>
+          <button class="button button-small" id="logoutButton" type="button">Logout</button>
+        </div>
+
+        <form id="uploadForm" class="upload-form">
+          <div class="field-row">
+            <label for="photoTitle">Photo title</label>
+            <input id="photoTitle" name="title" type="text" value="Wedding memory" required>
+          </div>
+          <div class="field-row">
+            <label for="photoCategory">Category</label>
+            <select id="photoCategory" name="category">
+              <option>Wedding</option>
+              <option>Engagement</option>
+              <option>Family</option>
+              <option>Blessings</option>
+            </select>
+          </div>
+          <label class="upload-drop" for="photos">
+            <input id="photos" name="photos" type="file" accept="image/*" multiple required>
+            <span>Choose photos</span>
+            <small>JPG, PNG, WEBP, or GIF. You can select multiple images.</small>
+          </label>
+          <div class="preview-grid" id="previewGrid" aria-live="polite"></div>
+          <button class="button button-primary" type="submit">Save Photos to Gallery</button>
+          <p class="form-status" id="uploadStatus" role="status"></p>
+        </form>
+      </section>
+
+      <section class="admin-card is-hidden" id="savedCard">
+        <div class="admin-card-header">
+          <div>
+            <p class="eyebrow">Live gallery</p>
+            <h2>Uploaded photos</h2>
+          </div>
+          <a class="button button-small" href="gallery.html">View Public Gallery</a>
+        </div>
+        <div class="saved-grid" id="savedGrid" aria-live="polite"></div>
+      </section>
+      </main>
+    </div>
+
+    <script src="admin.js"></script>
+  </body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Wedding gallery for Anagha and Kiran.">
+    <title>Wedding Gallery | Anagha & Kiran Wedding Invitation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    >
+    <link rel="stylesheet" href="styles.css?v=2">
+  </head>
+  <body class="admin-body">
+    <div class="site-shell">
+      <header class="topbar" aria-label="Gallery navigation">
+        <a class="brand-mark" href="index.html" aria-label="Back to invitation">
+          <span>AK</span>
+        </a>
+        <nav class="nav-links" aria-label="Gallery page links">
+          <a href="about.html">About Us</a>
+          <a href="gallery.html">Wedding Gallery</a>
+        </nav>
+        <a class="admin-link" href="index.html">Home</a>
+      </header>
+
+      <main class="admin-shell location-shell">
+        <section class="section-heading location-heading reveal">
+          <p class="eyebrow">Photo gallery</p>
+          <h2>Wedding gallery</h2>
+          <p class="location-copy">
+            A beautiful collection of engagement and wedding memories, all in one place.
+          </p>
+        </section>
+
+        <section class="section gallery-section gallery-page-section">
+          <div class="gallery-toolbar reveal">
+            <p>Saved photos and uploaded memories will appear here automatically.</p>
+            <a class="button button-small" href="admin.html">Upload Photos</a>
+          </div>
+          <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="lightbox" id="lightbox" aria-label="Photo preview">
+      <button class="lightbox-close" type="button" aria-label="Close preview">x</button>
+      <img id="lightboxImage" alt="">
+      <p id="lightboxCaption"></p>
+    </dialog>
+
+    <script src="config.js?v=2"></script>
+    <script src="app.js?v=2"></script>
+  </body>
+</html>

@@ -1,0 +1,19 @@
+{
+  "name": "anagha-kiran-wedding-invitation",
+  "version": "1.0.0",
+  "description": "Premium Kerala wedding invitation website with gallery upload admin.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "wedding",
+    "invitation",
+    "gallery",
+    "kerala"
+  ],
+  "author": "Anagha and Kiran family",
+  "license": "UNLICENSED",
+  "private": true
+}
