@@ -1062,11 +1062,23 @@ textarea:focus {
   gap: 0;
   align-items: center;
   padding: 24px 0 10px;
+  text-align: center;
+}
+
+.admin-hero > div {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+}
+
+.admin-hero p {
+  max-width: 36ch;
 }
 
 .admin-hero h1 {
   color: var(--maroon);
   font-size: clamp(3rem, 7vw, 6.4rem);
+  text-align: center;
 }
 
 .admin-card {
