@@ -10,6 +10,10 @@
     return `Supabase bucket "${bucketName}" is not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once.`;
   }
 
+  function getWishesSetupMessage() {
+    return "Supabase wishes table is not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once.";
+  }
+
   function isReadyConfig(config) {
     return Boolean(
       config &&
@@ -29,6 +33,10 @@
 
     if (/bucket.*not found/i.test(message)) {
       return new Error(getSetupMessage(config));
+    }
+
+    if (/relation .*wishes.* does not exist/i.test(message) || /could not find.*wishes/i.test(message)) {
+      return new Error(getWishesSetupMessage());
     }
 
     if (/row-level security|violates row-level security/i.test(message)) {
@@ -121,6 +129,14 @@
     return [...photos].sort((a, b) => {
       const aTime = a.uploadedAt ? new Date(a.uploadedAt).getTime() : 0;
       const bTime = b.uploadedAt ? new Date(b.uploadedAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  }
+
+  function sortWishesNewestFirst(wishes) {
+    return [...wishes].sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
       return bTime - aTime;
     });
   }
@@ -223,6 +239,43 @@
     return listPhotos();
   }
 
+  async function listWishes() {
+    const runtime = getRuntime();
+    if (!runtime) return [];
+
+    const { data, error } = await runtime.client
+      .from("wishes")
+      .select("id, name, message, created_at")
+      .order("created_at", { ascending: false })
+      .limit(50);
+
+    if (error) throw normalizeError(error, getConfig());
+
+    const wishes = (data || []).map((item) => ({
+      id: item.id,
+      name: item.name || "A well-wisher",
+      message: item.message || "",
+      createdAt: item.created_at || ""
+    }));
+
+    return sortWishesNewestFirst(wishes);
+  }
+
+  async function addWish(name, message) {
+    const runtime = getRuntime();
+    if (!runtime) throw new Error("Supabase is not configured yet.");
+
+    const payload = {
+      name: String(name || "A well-wisher").trim() || "A well-wisher",
+      message: String(message || "").trim()
+    };
+
+    const { error } = await runtime.client.from("wishes").insert(payload);
+    if (error) throw normalizeError(error, getConfig());
+
+    return listWishes();
+  }
+
   window.supabaseGallery = {
     isEnabled() {
       return Boolean(getRuntime());
@@ -232,6 +285,8 @@
     getSession,
     logout,
     uploadPhotos,
-    deletePhoto
+    deletePhoto,
+    listWishes,
+    addWish
   };
 })();

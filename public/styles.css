@@ -1224,6 +1224,61 @@ textarea:focus {
   color: var(--maroon);
 }
 
+.wishes-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 22px;
+  text-align: left;
+}
+
+.wish-card {
+  padding: 16px;
+  border: 1px solid rgba(198, 154, 62, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 253, 247, 0.82);
+  box-shadow: 0 14px 30px rgba(58, 30, 18, 0.08);
+}
+
+.wish-card-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wish-card-header strong {
+  color: var(--maroon);
+  font-size: 1rem;
+}
+
+.wish-card-header span {
+  color: var(--deep-gold);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wish-card p {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 0.98rem;
+  line-height: 1.8;
+}
+
+.wish-card-empty {
+  text-align: center;
+}
+
+.wish-card-empty strong {
+  color: var(--maroon);
+  font-size: 1rem;
+}
+
+.wish-card-empty p {
+  margin-top: 8px;
+}
+
 .admin-help {
   min-height: 24px;
   margin: 0;

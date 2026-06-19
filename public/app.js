@@ -220,17 +220,130 @@
     });
   }
 
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
+  }
+
+  function formatWishTime(value) {
+    if (!value) return "With blessings";
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "With blessings";
+
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+  }
+
+  function renderWishes(wishes) {
+    const list = qs("#wishesList");
+    if (!list) return;
+
+    if (!Array.isArray(wishes) || !wishes.length) {
+      list.innerHTML = `
+        <article class="wish-card wish-card-empty">
+          <strong>Be the first to bless the couple</strong>
+          <p>Your message will appear live here for Anagha and Kiran to cherish.</p>
+        </article>
+      `;
+      return;
+    }
+
+    list.innerHTML = wishes
+      .map(
+        (wish) => `
+          <article class="wish-card">
+            <div class="wish-card-header">
+              <strong>${escapeHtml(wish.name || "A well-wisher")}</strong>
+              <span>${escapeHtml(formatWishTime(wish.createdAt))}</span>
+            </div>
+            <p>${escapeHtml(wish.message || "")}</p>
+          </article>
+        `
+      )
+      .join("");
+  }
+
+  async function loadWishes() {
+    const status = qs("#blessingStatus");
+    const list = qs("#wishesList");
+    if (!list) return;
+
+    if (!window.supabaseGallery || !window.supabaseGallery.isEnabled()) {
+      renderWishes([]);
+      if (status) status.textContent = "";
+      return;
+    }
+
+    try {
+      const wishes = await window.supabaseGallery.listWishes();
+      renderWishes(wishes);
+      if (status) status.textContent = "";
+    } catch (error) {
+      renderWishes([]);
+      if (status) {
+        status.textContent = error.message || "Unable to load wishes right now.";
+        status.classList.add("is-error");
+      }
+    }
+  }
+
   function setupBlessings() {
     const form = qs("#blessingForm");
+    const status = qs("#blessingStatus");
     if (!form) return;
 
-    form.addEventListener("submit", (event) => {
+    loadWishes();
+
+    form.addEventListener("submit", async (event) => {
       event.preventDefault();
+
+      if (!window.supabaseGallery || !window.supabaseGallery.isEnabled()) {
+        if (status) {
+          status.textContent = "Live wishes are not ready yet.";
+          status.classList.add("is-error");
+        }
+        return;
+      }
+
       const data = new FormData(form);
-      const name = data.get("name") || "A well-wisher";
-      const message = data.get("message") || "Blessings to Anagha and Kiran.";
-      const body = encodeURIComponent(`${message}\n\n- ${name}`);
-      window.location.href = `mailto:?subject=Blessings for Anagha and Kiran&body=${body}`;
+      const name = String(data.get("name") || "").trim() || "A well-wisher";
+      const message = String(data.get("message") || "").trim();
+
+      if (!message) {
+        if (status) {
+          status.textContent = "Please write your blessing before sharing.";
+          status.classList.add("is-error");
+        }
+        return;
+      }
+
+      if (status) {
+        status.textContent = "Sharing your wish...";
+        status.classList.remove("is-error");
+      }
+
+      try {
+        const wishes = await window.supabaseGallery.addWish(name, message);
+        renderWishes(wishes);
+        form.reset();
+        if (status) {
+          status.textContent = "Your wish is now live on the page.";
+          status.classList.remove("is-error");
+        }
+      } catch (error) {
+        if (status) {
+          status.textContent = error.message || "Unable to share your wish right now.";
+          status.classList.add("is-error");
+        }
+      }
     });
   }
 

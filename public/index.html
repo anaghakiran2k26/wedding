@@ -153,8 +153,10 @@
               <input id="blessingName" name="name" type="text" placeholder="Your name">
               <label for="blessingText">Message</label>
               <textarea id="blessingText" name="message" rows="4" placeholder="Write a blessing"></textarea>
-              <button class="button button-primary" type="submit">Prepare Blessing</button>
+              <button class="button button-primary" type="submit">Share Wish</button>
             </form>
+            <p class="form-status" id="blessingStatus" aria-live="polite"></p>
+            <div class="wishes-list" id="wishesList" aria-live="polite"></div>
           </div>
         </section>
       </main>
@@ -177,7 +179,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js?v=6"></script>
     <script src="supabase-config.js?v=5"></script>
-    <script src="supabase-service.js?v=5"></script>
-    <script src="app.js?v=5"></script>
+    <script src="supabase-service.js?v=6"></script>
+    <script src="app.js?v=6"></script>
   </body>
 </html>
