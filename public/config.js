@@ -6,7 +6,7 @@ window.WEDDING_CONFIG = {
   brideName: "Anagha",
   groomName: "Kiran",
   eventName: "Marriage Ceremony",
-  venueName: "Sagar Auditorium, Pannicode",
+  venueName: "GALIO AUDITORIUM, PANNICODE",
   muhurthamTime: "9:30 AM to 10:30 AM",
   welcomeMessage: "All are welcome",
 
@@ -16,7 +16,7 @@ window.WEDDING_CONFIG = {
   */
   weddingDate: "2026-09-13T09:30:00+05:30",
 
-  mapUrl: "https://maps.app.goo.gl/TfrBfa4Xyh7JZ92H8",
+  mapUrl: "https://www.google.com/maps/search/?api=1&query=GALIO%20AUDITORIUM%20PANNICODE",
   engagementDriveUrl: "https://photos.app.goo.gl/vb2E9owD9M1qizH68",
   heroImage: "assets/images/anagha-kiran-hero.jpeg",
   couplePortrait: "assets/images/anagha-kiran-watercolor.jpeg",
