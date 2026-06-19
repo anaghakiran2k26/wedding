@@ -1213,6 +1213,47 @@ textarea:focus {
   color: #23170f;
 }
 
+.wishes-admin-list {
+  display: grid;
+  gap: 12px;
+}
+
+.wish-admin-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--ivory);
+}
+
+.wish-admin-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.wish-admin-head strong {
+  color: var(--maroon);
+  font-size: 1rem;
+}
+
+.wish-admin-head span {
+  color: var(--deep-gold);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wish-admin-card p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
 .form-status {
   min-height: 24px;
   margin: 0;

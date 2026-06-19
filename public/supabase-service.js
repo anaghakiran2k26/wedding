@@ -40,6 +40,12 @@
     }
 
     if (/row-level security|violates row-level security/i.test(message)) {
+      if (/wishes/i.test(message)) {
+        return new Error(
+          "Supabase wishes permissions are not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once."
+        );
+      }
+
       return new Error(
         "Supabase storage permissions are not ready yet. Open Supabase SQL Editor and run supabase-setup.sql once."
       );
@@ -276,6 +282,16 @@
     return listWishes();
   }
 
+  async function deleteWish(id) {
+    const runtime = getRuntime();
+    if (!runtime) throw new Error("Supabase is not configured yet.");
+
+    const { error } = await runtime.client.from("wishes").delete().eq("id", id);
+    if (error) throw normalizeError(error, getConfig());
+
+    return listWishes();
+  }
+
   window.supabaseGallery = {
     isEnabled() {
       return Boolean(getRuntime());
@@ -287,6 +303,7 @@
     uploadPhotos,
     deletePhoto,
     listWishes,
-    addWish
+    addWish,
+    deleteWish
   };
 })();

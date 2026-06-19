@@ -54,6 +54,7 @@ alter table public.wishes enable row level security;
 
 drop policy if exists "Public can read wishes" on public.wishes;
 drop policy if exists "Public can add wishes" on public.wishes;
+drop policy if exists "Authenticated users can delete wishes" on public.wishes;
 
 create policy "Public can read wishes"
 on public.wishes
@@ -71,3 +72,9 @@ with check (
   and char_length(trim(coalesce(name, ''))) <= 80
   and char_length(trim(coalesce(message, ''))) <= 500
 );
+
+create policy "Authenticated users can delete wishes"
+on public.wishes
+for delete
+to authenticated
+using (true);

@@ -5,13 +5,16 @@
   const loginCard = qs("#loginCard");
   const uploadCard = qs("#uploadCard");
   const savedCard = qs("#savedCard");
+  const wishesCard = qs("#wishesCard");
   const loginForm = qs("#loginForm");
   const uploadForm = qs("#uploadForm");
   const logoutButton = qs("#logoutButton");
   const previewGrid = qs("#previewGrid");
   const savedGrid = qs("#savedGrid");
+  const wishesAdminList = qs("#wishesAdminList");
   const loginStatus = qs("#loginStatus");
   const uploadStatus = qs("#uploadStatus");
+  const wishesStatus = qs("#wishesStatus");
   const photoInput = qs("#photos");
   const emailRow = qs("#emailRow");
   const loginHint = qs("#loginHint");
@@ -84,7 +87,11 @@
     loginCard.classList.toggle("is-hidden", unlocked);
     uploadCard.classList.toggle("is-hidden", !unlocked);
     savedCard.classList.toggle("is-hidden", !unlocked);
-    if (unlocked) loadSavedPhotos();
+    wishesCard.classList.toggle("is-hidden", !unlocked);
+    if (unlocked) {
+      loadSavedPhotos();
+      loadSavedWishes();
+    }
   }
 
   function setStatus(node, message, isError) {
@@ -97,6 +104,15 @@
     const path = photo.path || photo.src || "";
     const extension = (path.match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i) || [".jpg"])[0].replace("?", "");
     return `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wedding-photo"}${extension}`;
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   async function downloadPhoto(photo) {
@@ -246,6 +262,25 @@
     }
   }
 
+  async function loadSavedWishes() {
+    if (!wishesAdminList) return;
+
+    if (useSupabase) {
+      try {
+        const wishes = await window.supabaseGallery.listWishes();
+        renderSavedWishes(wishes || []);
+        setStatus(wishesStatus, "");
+      } catch (error) {
+        renderSavedWishes([]);
+        setStatus(wishesStatus, error.message || "Could not load wishes.", true);
+      }
+      return;
+    }
+
+    renderSavedWishes([]);
+    setStatus(wishesStatus, "Live wishes manager works with Supabase.", true);
+  }
+
   function renderSavedPhotos(photos) {
     savedGrid.innerHTML = "";
     if (!photos.length) {
@@ -274,6 +309,46 @@
     });
   }
 
+  function renderSavedWishes(wishes) {
+    if (!wishesAdminList) return;
+
+    wishesAdminList.innerHTML = "";
+    if (!wishes.length) {
+      wishesAdminList.innerHTML = '<p class="empty-note">No wishes yet.</p>';
+      return;
+    }
+
+    wishes.forEach((wish) => {
+      const article = document.createElement("article");
+      article.className = "wish-admin-card";
+      article.innerHTML = `
+        <div class="wish-admin-head">
+          <strong>${escapeHtml(wish.name || "A well-wisher")}</strong>
+          <span>${formatWishDate(wish.createdAt)}</span>
+        </div>
+        <p>${escapeHtml(wish.message || "")}</p>
+        <button class="button button-small saved-delete" type="button">Delete Wish</button>
+      `;
+
+      article
+        .querySelector(".saved-delete")
+        .addEventListener("click", () => deleteWish(wish.id));
+
+      wishesAdminList.appendChild(article);
+    });
+  }
+
+  function formatWishDate(value) {
+    if (!value) return "Blessing";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "Blessing";
+    return date.toLocaleDateString("en-IN", {
+      day: "numeric",
+      month: "short",
+      year: "numeric"
+    });
+  }
+
   async function deletePhoto(photoId) {
     if (!photoId) return;
 
@@ -297,6 +372,18 @@
       renderSavedPhotos(data.gallery || []);
     } catch (error) {
       setStatus(uploadStatus, error.message, true);
+    }
+  }
+
+  async function deleteWish(wishId) {
+    if (!wishId || !useSupabase) return;
+
+    try {
+      const wishes = await window.supabaseGallery.deleteWish(wishId);
+      renderSavedWishes(wishes || []);
+      setStatus(wishesStatus, "Wish deleted.");
+    } catch (error) {
+      setStatus(wishesStatus, error.message || "Could not delete wish.", true);
     }
   }
 
