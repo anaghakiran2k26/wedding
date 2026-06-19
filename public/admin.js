@@ -92,6 +92,33 @@
     node.classList.toggle("is-error", Boolean(isError));
   }
 
+  function safeFileName(photo) {
+    const title = photo.title || "wedding-photo";
+    const path = photo.path || photo.src || "";
+    const extension = (path.match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i) || [".jpg"])[0].replace("?", "");
+    return `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wedding-photo"}${extension}`;
+  }
+
+  async function downloadPhoto(photo) {
+    if (!photo || !photo.src) return;
+
+    try {
+      const response = await fetch(photo.src);
+      if (!response.ok) throw new Error("Download unavailable");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = safeFileName(photo);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      window.open(photo.src, "_blank", "noopener");
+    }
+  }
+
   loginForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     setStatus(loginStatus, "Checking access...");
@@ -235,10 +262,14 @@
           <strong>${photo.title || "Wedding memory"}</strong>
           <span>${photo.category || "Gallery"}</span>
         </div>
-        <button class="button button-small" type="button">Delete</button>
+        <div class="saved-photo-actions">
+          <button class="button button-small saved-download" type="button">Download</button>
+          <button class="button button-small saved-delete" type="button">Delete</button>
+        </div>
       `;
 
-      article.querySelector("button").addEventListener("click", () => deletePhoto(photo.path || photo.id));
+      article.querySelector(".saved-download").addEventListener("click", () => downloadPhoto(photo));
+      article.querySelector(".saved-delete").addEventListener("click", () => deletePhoto(photo.path || photo.id));
       savedGrid.appendChild(article);
     });
   }

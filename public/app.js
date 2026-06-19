@@ -120,6 +120,33 @@
     return button;
   }
 
+  function safeFileName(photo) {
+    const title = photo.title || "wedding-photo";
+    const path = photo.path || photo.src || "";
+    const extension = (path.match(/\.(jpe?g|png|webp|gif)(?:\?|$)/i) || [".jpg"])[0].replace("?", "");
+    return `${title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "wedding-photo"}${extension}`;
+  }
+
+  async function downloadPhoto(photo) {
+    if (!photo || !photo.src) return;
+
+    try {
+      const response = await fetch(photo.src);
+      if (!response.ok) throw new Error("Download unavailable");
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = objectUrl;
+      link.download = safeFileName(photo);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(objectUrl);
+    } catch {
+      window.open(photo.src, "_blank", "noopener");
+    }
+  }
+
   function renderEngagementPhotos() {
     const strip = qs("#engagementPhotos");
     if (!strip) return;
@@ -170,11 +197,15 @@
     const dialog = qs("#lightbox");
     const image = qs("#lightboxImage");
     const caption = qs("#lightboxCaption");
+    const download = qs("#lightboxDownload");
     if (!dialog || !image || !caption) return;
 
     image.src = photo.src;
     image.alt = photo.title || "Wedding photo";
     caption.textContent = `${photo.title || "Wedding memory"}${photo.category ? ` | ${photo.category}` : ""}`;
+    if (download) {
+      download.onclick = () => downloadPhoto(photo);
+    }
     dialog.showModal();
   }
 

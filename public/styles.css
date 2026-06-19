@@ -972,6 +972,11 @@ textarea:focus {
   color: rgba(255, 253, 247, 0.82);
 }
 
+.lightbox-download {
+  width: 100%;
+  margin-top: 14px;
+}
+
 .lightbox-close {
   position: absolute;
   top: 14px;
@@ -1176,9 +1181,21 @@ textarea:focus {
   color: var(--ink);
 }
 
-.saved-photo .button {
-  width: calc(100% - 24px);
-  margin: 0 12px;
+.saved-photo-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+.saved-photo-actions .button {
+  width: 100%;
+  margin: 0;
+}
+
+.saved-photo-actions .saved-download {
+  background: linear-gradient(135deg, #e3bd67, #9b6d23);
+  color: #23170f;
 }
 
 .form-status {
