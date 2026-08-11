@@ -17,7 +17,7 @@ window.WEDDING_CONFIG = {
   weddingDate: "2026-09-13T09:30:00+05:30",
 
   mapUrl: "https://www.google.com/maps/search/?api=1&query=GALIO%20AUDITORIUM%20PANNICODE",
-  engagementDriveUrl: "https://photos.app.goo.gl/vb2E9owD9M1qizH68",
+  engagementDriveUrl: "https://photos.app.goo.gl/SpZpHxwMKtsCHDEH9",
   heroImage: "assets/images/anagha-kiran-hero.jpeg",
   couplePortrait: "assets/images/anagha-kiran-watercolor.jpeg",
 
