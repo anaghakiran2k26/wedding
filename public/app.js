@@ -124,12 +124,13 @@
     window.location.href = `gallery.html?collection=${encodeURIComponent(collection)}`;
   }
 
-  function photoCollectionCard(photos, title, collection) {
+  function photoCollectionCard(photos, title, collection, isCategory = false) {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "photo-card";
     card.style.animationDelay = "0ms";
     card.classList.add("photo-collection-card");
+    if (isCategory) card.classList.add("category-collection-card");
     card.innerHTML = `
       <img src="${photos[0].src}" alt="${title}">
       <span>
@@ -219,18 +220,39 @@
       (photo) => String(photo.category || "").toLowerCase() !== "save the date"
     );
 
+    const categoryOrder = ["engagement", "wedding", "family", "blessings"];
+    const categoryGroups = new Map();
+    weddingPhotos.forEach((photo) => {
+      const category = String(photo.category || "Gallery").trim() || "Gallery";
+      const slug = category.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+      if (!categoryGroups.has(slug)) categoryGroups.set(slug, { title: category, photos: [] });
+      categoryGroups.get(slug).photos.push(photo);
+    });
+    const orderedCategoryGroups = [...categoryGroups.entries()].sort(([a], [b]) => {
+      const aOrder = categoryOrder.indexOf(a);
+      const bOrder = categoryOrder.indexOf(b);
+      if (aOrder === -1 && bOrder === -1) return a.localeCompare(b);
+      if (aOrder === -1) return 1;
+      if (bOrder === -1) return -1;
+      return aOrder - bOrder;
+    });
+
     const collection = new URLSearchParams(window.location.search).get("collection");
-    if (collection === "save-the-date" || collection === "wedding") {
-      const selectedGrid = collection === "save-the-date" ? saveTheDateGrid : grid;
-      const selectedGroup = collection === "save-the-date" ? saveTheDateGroup : weddingGroup;
-      const selectedPhotos = collection === "save-the-date" ? saveTheDatePhotos : weddingPhotos;
-      const otherGroup = collection === "save-the-date" ? weddingGroup : saveTheDateGroup;
+    if (collection === "save-the-date" || categoryGroups.has(collection)) {
+      const isSaveTheDate = collection === "save-the-date";
+      const selectedGrid = isSaveTheDate ? saveTheDateGrid : grid;
+      const selectedGroup = isSaveTheDate ? saveTheDateGroup : weddingGroup;
+      const selectedPhotos = isSaveTheDate ? saveTheDatePhotos : categoryGroups.get(collection).photos;
+      const selectedTitle = isSaveTheDate ? "Save the date" : categoryGroups.get(collection).title;
+      const otherGroup = isSaveTheDate ? weddingGroup : saveTheDateGroup;
       const pageHeading = qs(".location-heading h2");
+      const groupHeading = qs(".gallery-group-heading h3", selectedGroup);
 
       otherGroup?.classList.add("is-hidden");
       selectedGroup?.classList.remove("is-hidden");
       backLink?.classList.remove("is-hidden");
-      if (pageHeading) pageHeading.textContent = collection === "save-the-date" ? "Save the date" : "Wedding gallery";
+      if (pageHeading) pageHeading.textContent = selectedTitle;
+      if (groupHeading) groupHeading.textContent = selectedTitle;
       if (selectedGrid) {
         selectedGrid.innerHTML = "";
         if (!selectedPhotos.length) {
@@ -258,7 +280,9 @@
         return;
       }
 
-      grid.appendChild(photoCollectionCard(weddingPhotos, "Wedding gallery", "wedding"));
+      orderedCategoryGroups.forEach(([slug, group]) => {
+        grid.appendChild(photoCollectionCard(group.photos, group.title, slug, true));
+      });
     }
   }
 

@@ -1083,6 +1083,12 @@ textarea:focus {
   margin-inline: auto;
 }
 
+.gallery-page-section .category-collection-card {
+  grid-column: auto;
+  width: 100%;
+  min-height: 220px;
+}
+
 .gallery-page-section .photo-card span {
   right: 10px;
   bottom: 10px;
