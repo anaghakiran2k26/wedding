@@ -2,7 +2,8 @@ window.SUPABASE_CONFIG = {
   // Use Supabase on GitHub Pages and keep the local server as the localhost fallback.
   enabled: true,
   url: "https://pdrcrkxeyqxqgpwfxqpu.supabase.co",
-  anonKey: "sb_publishable_ltaNA7nnVozoSCOcZIjg",
+  // This project's legacy public anon key is browser-safe and works with the current Supabase client.
+  anonKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkcmNya3hleXF4cWdwd2Z4cXB1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYxNzcwOTIsImV4cCI6MjEwMTc1MzA5Mn0.C_XIbwUXwMcp2ElCUyGPJqDtJcKB_DpeO0IA9B5--54",
   bucket: "wedding-gallery",
   folder: "gallery"
 };
