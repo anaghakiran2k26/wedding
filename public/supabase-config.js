@@ -1,8 +1,8 @@
 window.SUPABASE_CONFIG = {
   // Use Supabase on GitHub Pages and keep the local server as the localhost fallback.
   enabled: true,
-  url: "https://rcxrydarrnyuasussdcn.supabase.co",
-  anonKey: "sb_publishable_XP1XQhAukDiJkHB3svi5MQ_j28_ym0u",
+  url: "https://pdrcrkxeyqxqgpwfxqpu.supabase.co",
+  anonKey: "sb_publishable_ltaNA7nnVozoSCOcZIjg",
   bucket: "wedding-gallery",
   folder: "gallery"
 };
