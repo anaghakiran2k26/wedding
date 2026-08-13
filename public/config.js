@@ -26,6 +26,8 @@ window.WEDDING_CONFIG = {
 
   starterPhotos: [],
 
+  saveTheDatePhotos: [],
+
   engagementPhotos: [
     {
       src: "assets/engagement/anagha-kiran-engagement-promise.jpeg",

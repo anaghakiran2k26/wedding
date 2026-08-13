@@ -11,7 +11,7 @@
       href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     >
-    <link rel="stylesheet" href="styles.css?v=5">
+    <link rel="stylesheet" href="styles.css?v=6">
   </head>
   <body class="admin-body">
     <div class="site-shell">
@@ -40,7 +40,23 @@
             <p>Saved photos and uploaded memories will appear here automatically.</p>
             <a class="button button-small" href="admin.html">Upload Photos</a>
           </div>
-          <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+          <div class="gallery-group reveal">
+            <div class="gallery-group-heading">
+              <p class="eyebrow">Special preview</p>
+              <h3>Save the date gallery</h3>
+              <p class="location-copy">Upload your save the date portraits from admin and they will appear here automatically.</p>
+            </div>
+            <div class="gallery-grid" id="saveTheDateGrid" aria-live="polite"></div>
+          </div>
+
+          <div class="gallery-group reveal">
+            <div class="gallery-group-heading">
+              <p class="eyebrow">Celebration memories</p>
+              <h3>Wedding gallery</h3>
+              <p class="location-copy">All engagement, wedding, family, and blessings memories will continue here.</p>
+            </div>
+            <div class="gallery-grid" id="galleryGrid" aria-live="polite"></div>
+          </div>
         </section>
       </main>
     </div>
@@ -57,7 +73,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js?v=7"></script>
     <script src="supabase-config.js?v=5"></script>
-    <script src="supabase-service.js?v=5"></script>
-    <script src="app.js?v=5"></script>
+    <script src="supabase-service.js?v=6"></script>
+    <script src="app.js?v=7"></script>
   </body>
 </html>

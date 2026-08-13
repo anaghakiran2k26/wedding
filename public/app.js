@@ -178,19 +178,41 @@
 
   async function renderGallery() {
     const grid = qs("#galleryGrid");
-    if (!grid) return;
+    const saveTheDateGrid = qs("#saveTheDateGrid");
+    if (!grid && !saveTheDateGrid) return;
 
     const uploaded = await fetchUploadedPhotos();
     const starter = Array.isArray(config.starterPhotos) ? config.starterPhotos : [];
-    const photos = [...uploaded, ...starter];
+    const saveTheDateStarter = Array.isArray(config.saveTheDatePhotos) ? config.saveTheDatePhotos : [];
+    const allPhotos = [...uploaded, ...starter];
 
-    grid.innerHTML = "";
-    if (!photos.length) {
-      grid.innerHTML = '<p class="empty-note">Photos will be added soon.</p>';
-      return;
+    const saveTheDatePhotos = [
+      ...allPhotos.filter((photo) => String(photo.category || "").toLowerCase() === "save the date"),
+      ...saveTheDateStarter
+    ];
+
+    const weddingPhotos = allPhotos.filter(
+      (photo) => String(photo.category || "").toLowerCase() !== "save the date"
+    );
+
+    if (saveTheDateGrid) {
+      saveTheDateGrid.innerHTML = "";
+      if (!saveTheDatePhotos.length) {
+        saveTheDateGrid.innerHTML = '<p class="empty-note">Save the date photos will be added soon.</p>';
+      } else {
+        saveTheDatePhotos.forEach((photo, index) => saveTheDateGrid.appendChild(photoCard(photo, index)));
+      }
     }
 
-    photos.forEach((photo, index) => grid.appendChild(photoCard(photo, index)));
+    if (grid) {
+      grid.innerHTML = "";
+      if (!weddingPhotos.length) {
+        grid.innerHTML = '<p class="empty-note">Wedding gallery photos will be added soon.</p>';
+        return;
+      }
+
+      weddingPhotos.forEach((photo, index) => grid.appendChild(photoCard(photo, index)));
+    }
   }
 
   function openLightbox(photo) {

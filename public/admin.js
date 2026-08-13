@@ -209,6 +209,7 @@
 
         uploadForm.reset();
         qs("#photoTitle").value = "Wedding memory";
+        qs("#photoCategory").value = "Wedding";
         previewGrid.innerHTML = "";
         setStatus(uploadStatus, "Photos saved to the public gallery.");
         renderSavedPhotos(gallery || []);
@@ -230,6 +231,7 @@
 
       uploadForm.reset();
       qs("#photoTitle").value = "Wedding memory";
+      qs("#photoCategory").value = "Wedding";
       previewGrid.innerHTML = "";
       setStatus(uploadStatus, "Photos saved to the public gallery.");
       renderSavedPhotos(data.gallery || []);

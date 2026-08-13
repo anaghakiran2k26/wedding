@@ -1025,6 +1025,20 @@ textarea:focus {
   display: none;
 }
 
+.gallery-group + .gallery-group {
+  margin-top: 30px;
+}
+
+.gallery-group-heading {
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.gallery-group-heading h3 {
+  color: var(--maroon);
+  font-size: clamp(2rem, 8vw, 3rem);
+}
+
 .gallery-page-section .gallery-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
