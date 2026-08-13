@@ -27,6 +27,15 @@
   async function parseJsonResponse(response) {
     const text = await response.text();
 
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.toLowerCase().includes("application/json")) {
+      throw new Error(
+        useSupabase
+          ? "Supabase returned an unexpected response. Check the Supabase project URL and setup."
+          : "GitHub Pages cannot run the local upload backend. Enable Supabase or use the localhost admin."
+      );
+    }
+
     try {
       return text ? JSON.parse(text) : {};
     } catch {
