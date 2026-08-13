@@ -77,8 +77,7 @@
       if (emailRow) emailRow.classList.remove("is-hidden");
       if (emailInput) emailInput.required = true;
       if (loginHint) {
-        loginHint.textContent =
-          "Use your Supabase admin email and password to manage the gallery. If saving shows a bucket or permission error, run supabase-setup.sql once in Supabase SQL Editor.";
+        loginHint.textContent = "";
       }
       return;
     }
