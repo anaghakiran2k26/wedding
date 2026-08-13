@@ -13,6 +13,7 @@ const PUBLIC_DIR = path.join(ROOT, "public");
 const UPLOAD_DIR = path.join(ROOT, "uploads", "gallery");
 const DATA_DIR = path.join(ROOT, "data");
 const GALLERY_FILE = path.join(DATA_DIR, "gallery.json");
+const WISHES_FILE = path.join(DATA_DIR, "wishes.json");
 
 const MIME_TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -113,6 +114,23 @@ function writeGallery(items) {
   fs.renameSync(tmpPath, GALLERY_FILE);
 }
 
+function readWishes() {
+  if (!fs.existsSync(WISHES_FILE)) return [];
+
+  try {
+    const data = JSON.parse(fs.readFileSync(WISHES_FILE, "utf8"));
+    return Array.isArray(data) ? data : [];
+  } catch {
+    return [];
+  }
+}
+
+function writeWishes(items) {
+  const tmpPath = `${WISHES_FILE}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(items, null, 2));
+  fs.renameSync(tmpPath, WISHES_FILE);
+}
+
 function sanitizeFilename(name) {
   const ext = path.extname(name).toLowerCase();
   const stem = path
@@ -207,6 +225,61 @@ async function handleApi(req, res) {
 
   if (req.method === "GET" && url.pathname === "/api/gallery") {
     jsonResponse(res, 200, { photos: readGallery() });
+    return;
+  }
+
+  if (req.method === "GET" && url.pathname === "/api/wishes") {
+    jsonResponse(res, 200, { wishes: readWishes().slice(0, 50) });
+    return;
+  }
+
+  if (req.method === "POST" && url.pathname === "/api/wishes") {
+    try {
+      const body = JSON.parse((await readRequestBody(req, 1024 * 12)).toString("utf8"));
+      const name = String(body.name || "A well-wisher").trim() || "A well-wisher";
+      const message = String(body.message || "").trim();
+
+      if (!message) {
+        jsonResponse(res, 400, { error: "Please write your blessing before sharing." });
+        return;
+      }
+
+      if (name.length > 80 || message.length > 500) {
+        jsonResponse(res, 400, { error: "Please keep your name under 80 characters and message under 500 characters." });
+        return;
+      }
+
+      const wish = {
+        id: crypto.randomUUID(),
+        name,
+        message,
+        createdAt: new Date().toISOString()
+      };
+      const wishes = [wish, ...readWishes()];
+      writeWishes(wishes);
+      jsonResponse(res, 201, { wish, wishes: wishes.slice(0, 50) });
+    } catch {
+      jsonResponse(res, 400, { error: "Could not read wish request." });
+    }
+    return;
+  }
+
+  if (req.method === "DELETE" && url.pathname.startsWith("/api/wishes/")) {
+    if (!isValidToken(req)) {
+      jsonResponse(res, 401, { error: "Please login again." });
+      return;
+    }
+
+    const id = decodeURIComponent(url.pathname.replace("/api/wishes/", ""));
+    const wishes = readWishes();
+    if (!wishes.some((wish) => wish.id === id)) {
+      jsonResponse(res, 404, { error: "Wish not found." });
+      return;
+    }
+
+    const nextWishes = wishes.filter((wish) => wish.id !== id);
+    writeWishes(nextWishes);
+    jsonResponse(res, 200, { wishes: nextWishes.slice(0, 50) });
     return;
   }
 

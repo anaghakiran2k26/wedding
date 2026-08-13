@@ -120,6 +120,27 @@
     return button;
   }
 
+  function openCollectionPage(collection) {
+    window.location.href = `gallery.html?collection=${encodeURIComponent(collection)}`;
+  }
+
+  function photoCollectionCard(photos, title, collection) {
+    const card = document.createElement("button");
+    card.type = "button";
+    card.className = "photo-card";
+    card.style.animationDelay = "0ms";
+    card.classList.add("photo-collection-card");
+    card.innerHTML = `
+      <img src="${photos[0].src}" alt="${title}">
+      <span>
+        <strong>${title}</strong>
+        <small>${photos.length} photo${photos.length === 1 ? "" : "s"} · View all</small>
+      </span>
+    `;
+    card.addEventListener("click", () => openCollectionPage(collection));
+    return card;
+  }
+
   function safeFileName(photo) {
     const title = photo.title || "wedding-photo";
     const path = photo.path || photo.src || "";
@@ -179,6 +200,9 @@
   async function renderGallery() {
     const grid = qs("#galleryGrid");
     const saveTheDateGrid = qs("#saveTheDateGrid");
+    const saveTheDateGroup = qs("#saveTheDateGroup");
+    const weddingGroup = qs("#weddingGroup");
+    const backLink = qs("#galleryBackLink");
     if (!grid && !saveTheDateGrid) return;
 
     const uploaded = await fetchUploadedPhotos();
@@ -195,12 +219,35 @@
       (photo) => String(photo.category || "").toLowerCase() !== "save the date"
     );
 
+    const collection = new URLSearchParams(window.location.search).get("collection");
+    if (collection === "save-the-date" || collection === "wedding") {
+      const selectedGrid = collection === "save-the-date" ? saveTheDateGrid : grid;
+      const selectedGroup = collection === "save-the-date" ? saveTheDateGroup : weddingGroup;
+      const selectedPhotos = collection === "save-the-date" ? saveTheDatePhotos : weddingPhotos;
+      const otherGroup = collection === "save-the-date" ? weddingGroup : saveTheDateGroup;
+      const pageHeading = qs(".location-heading h2");
+
+      otherGroup?.classList.add("is-hidden");
+      selectedGroup?.classList.remove("is-hidden");
+      backLink?.classList.remove("is-hidden");
+      if (pageHeading) pageHeading.textContent = collection === "save-the-date" ? "Save the date" : "Wedding gallery";
+      if (selectedGrid) {
+        selectedGrid.innerHTML = "";
+        if (!selectedPhotos.length) {
+          selectedGrid.innerHTML = '<p class="empty-note">No photos have been added yet.</p>';
+        } else {
+          selectedPhotos.forEach((photo, index) => selectedGrid.appendChild(photoCard(photo, index)));
+        }
+      }
+      return;
+    }
+
     if (saveTheDateGrid) {
       saveTheDateGrid.innerHTML = "";
       if (!saveTheDatePhotos.length) {
         saveTheDateGrid.innerHTML = '<p class="empty-note">Save the date photos will be added soon.</p>';
       } else {
-        saveTheDatePhotos.forEach((photo, index) => saveTheDateGrid.appendChild(photoCard(photo, index)));
+        saveTheDateGrid.appendChild(photoCollectionCard(saveTheDatePhotos, "Save the date", "save-the-date"));
       }
     }
 
@@ -211,32 +258,50 @@
         return;
       }
 
-      weddingPhotos.forEach((photo, index) => grid.appendChild(photoCard(photo, index)));
+      grid.appendChild(photoCollectionCard(weddingPhotos, "Wedding gallery", "wedding"));
     }
   }
 
-  function openLightbox(photo) {
+  function openLightbox(photo, photos = [photo], index = 0) {
     const dialog = qs("#lightbox");
     const image = qs("#lightboxImage");
     const caption = qs("#lightboxCaption");
     const download = qs("#lightboxDownload");
+    const previous = qs("#lightboxPrevious");
+    const next = qs("#lightboxNext");
     if (!dialog || !image || !caption) return;
+
+    dialog.dataset.photoIndex = String(index);
+    dialog._photos = photos;
 
     image.src = photo.src;
     image.alt = photo.title || "Wedding photo";
-    caption.textContent = `${photo.title || "Wedding memory"}${photo.category ? ` | ${photo.category}` : ""}`;
+    caption.textContent = `${photo.title || "Wedding memory"}${photo.category ? ` | ${photo.category}` : ""}${photos.length > 1 ? ` | ${index + 1} of ${photos.length}` : ""}`;
+    if (previous) previous.hidden = photos.length < 2;
+    if (next) next.hidden = photos.length < 2;
     if (download) {
       download.onclick = () => downloadPhoto(photo);
     }
-    dialog.showModal();
+    if (!dialog.open) dialog.showModal();
   }
 
   function setupLightbox() {
     const dialog = qs("#lightbox");
     const close = qs(".lightbox-close");
+    const previous = qs("#lightboxPrevious");
+    const next = qs("#lightboxNext");
     if (!dialog || !close) return;
 
     close.addEventListener("click", () => dialog.close());
+    function showAdjacentPhoto(step) {
+      const photos = dialog._photos || [];
+      if (photos.length < 2) return;
+      const currentIndex = Number(dialog.dataset.photoIndex || 0);
+      const nextIndex = (currentIndex + step + photos.length) % photos.length;
+      openLightbox(photos[nextIndex], photos, nextIndex);
+    }
+    previous?.addEventListener("click", () => showAdjacentPhoto(-1));
+    next?.addEventListener("click", () => showAdjacentPhoto(1));
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) dialog.close();
     });
@@ -298,14 +363,16 @@
     const list = qs("#wishesList");
     if (!list) return;
 
-    if (!window.supabaseGallery || !window.supabaseGallery.isEnabled()) {
-      renderWishes([]);
-      if (status) status.textContent = "";
-      return;
-    }
-
     try {
-      const wishes = await window.supabaseGallery.listWishes();
+      let wishes;
+      if (window.supabaseGallery && window.supabaseGallery.isEnabled()) {
+        wishes = await window.supabaseGallery.listWishes();
+      } else {
+        const response = await fetch("/api/wishes", { cache: "no-store" });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "Unable to load wishes right now.");
+        wishes = Array.isArray(data.wishes) ? data.wishes : [];
+      }
       renderWishes(wishes);
       if (status) status.textContent = "";
     } catch (error) {
@@ -327,14 +394,6 @@
     form.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      if (!window.supabaseGallery || !window.supabaseGallery.isEnabled()) {
-        if (status) {
-          status.textContent = "Live wishes are not ready yet.";
-          status.classList.add("is-error");
-        }
-        return;
-      }
-
       const data = new FormData(form);
       const name = String(data.get("name") || "").trim() || "A well-wisher";
       const message = String(data.get("message") || "").trim();
@@ -353,7 +412,19 @@
       }
 
       try {
-        const wishes = await window.supabaseGallery.addWish(name, message);
+        let wishes;
+        if (window.supabaseGallery && window.supabaseGallery.isEnabled()) {
+          wishes = await window.supabaseGallery.addWish(name, message);
+        } else {
+          const response = await fetch("/api/wishes", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ name, message })
+          });
+          const result = await response.json();
+          if (!response.ok) throw new Error(result.error || "Unable to share your wish right now.");
+          wishes = result.wishes || [];
+        }
         renderWishes(wishes);
         form.reset();
         if (status) {

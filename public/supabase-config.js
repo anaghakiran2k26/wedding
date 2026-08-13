@@ -1,5 +1,6 @@
 window.SUPABASE_CONFIG = {
-  enabled: true,
+  // Use the local server until a working Supabase project is configured.
+  enabled: false,
   url: "https://cjhgbkjaiblvwugozlle.supabase.co",
   anonKey: "sb_publishable_ajktECZsTkXFZyC1y6cDjA_3OS3yw8e",
   bucket: "wedding-gallery",

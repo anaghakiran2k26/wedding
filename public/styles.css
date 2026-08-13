@@ -996,6 +996,32 @@ textarea:focus {
   font-weight: 900;
 }
 
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.46);
+  color: #fff;
+  cursor: pointer;
+  font-size: 2rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.lightbox-prev {
+  left: 26px;
+}
+
+.lightbox-next {
+  right: 26px;
+}
+
 .empty-note {
   margin: 0;
   color: var(--muted);
@@ -1042,10 +1068,19 @@ textarea:focus {
 .gallery-page-section .gallery-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 10px;
+  justify-items: center;
 }
 
 .gallery-page-section .photo-card {
+  width: 100%;
   min-height: 180px;
+}
+
+.gallery-page-section .photo-collection-card {
+  grid-column: 1 / -1;
+  width: min(100%, 195px);
+  justify-self: center;
+  margin-inline: auto;
 }
 
 .gallery-page-section .photo-card span {
@@ -1060,6 +1095,12 @@ textarea:focus {
 
 .gallery-page-section .photo-card small {
   font-size: 0.62rem;
+}
+
+.gallery-page-section .collection-back {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 2px;
 }
 
 .location-heading {

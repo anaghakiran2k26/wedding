@@ -41,7 +41,7 @@
   function getFetchErrorMessage(error, action) {
     const localAdminUrl =
       window.location.protocol === "file:"
-        ? "http://localhost:3000/admin.html"
+        ? "http://localhost:3002/admin.html"
         : `${window.location.origin}/admin.html`;
 
     if (isStaticHost && !useSupabase) {
@@ -279,8 +279,16 @@
       return;
     }
 
-    renderSavedWishes([]);
-    setStatus(wishesStatus, "Live wishes manager works with Supabase.", true);
+    try {
+      const response = await fetch("/api/wishes", { cache: "no-store" });
+      const data = await parseJsonResponse(response);
+      if (!response.ok) throw new Error(data.error || "Could not load wishes.");
+      renderSavedWishes(data.wishes || []);
+      setStatus(wishesStatus, "");
+    } catch (error) {
+      renderSavedWishes([]);
+      setStatus(wishesStatus, getFetchErrorMessage(error, "load wishes"), true);
+    }
   }
 
   function renderSavedPhotos(photos) {
@@ -334,7 +342,9 @@
 
       article
         .querySelector(".saved-delete")
-        .addEventListener("click", () => deleteWish(wish.id));
+        .addEventListener("click", () => {
+          if (window.confirm("Delete this wish permanently?")) deleteWish(wish.id);
+        });
 
       wishesAdminList.appendChild(article);
     });
@@ -378,11 +388,22 @@
   }
 
   async function deleteWish(wishId) {
-    if (!wishId || !useSupabase) return;
+    if (!wishId) return;
 
     try {
-      const wishes = await window.supabaseGallery.deleteWish(wishId);
-      renderSavedWishes(wishes || []);
+      let wishes;
+      if (useSupabase) {
+        wishes = await window.supabaseGallery.deleteWish(wishId);
+      } else {
+        const response = await fetch(`/api/wishes/${encodeURIComponent(wishId)}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${getToken()}` }
+        });
+        const data = await parseJsonResponse(response);
+        if (!response.ok) throw new Error(data.error || "Could not delete wish.");
+        wishes = data.wishes || [];
+      }
+      renderSavedWishes(wishes);
       setStatus(wishesStatus, "Wish deleted.");
     } catch (error) {
       setStatus(wishesStatus, error.message || "Could not delete wish.", true);
